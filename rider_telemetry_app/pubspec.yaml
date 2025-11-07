@@ -1,7 +1,6 @@
 name: rider_telemetry_app
-description: "A new Flutter project."
+description: "Rider Telemetry App"
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
@@ -11,12 +10,11 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-
-  # Core packages for telemetry and storage
   sensors_plus: ^4.0.2
   geolocator: ^10.1.0
   sqflite: ^2.3.3
   path_provider: ^2.1.4
+  vector_math: ^2.1.4
 
 dev_dependencies:
   flutter_test:
