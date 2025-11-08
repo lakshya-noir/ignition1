@@ -19,8 +19,9 @@ class Sample {
   final double longitude;
   final double bearingDeg;
 
-  // Derived value
-  final double decel; // ✅ new field
+  // Derived values
+  final double decel;   // Deceleration magnitude
+  final double tiltDeg; // Tilt angle (degrees from vertical)
 
   Sample({
     this.id,
@@ -36,10 +37,12 @@ class Sample {
     required this.latitude,
     required this.longitude,
     required this.bearingDeg,
-    this.decel = 0.0, // ✅ optional, defaults to 0
+    this.decel = 0.0,
+    this.tiltDeg = 0.0,
   });
 
   Map<String, dynamic> toMap() => {
+        'id': id,
         'ride_id': rideId,
         'timestamp': timestamp.toIso8601String(),
         'ax_long': axLong,
@@ -52,7 +55,8 @@ class Sample {
         'lat': latitude,
         'lon': longitude,
         'bearing_deg': bearingDeg,
-        'decel': decel, // ✅ added
+        'decel': decel,
+        'tilt_deg': tiltDeg, // ✅ added
       };
 
   factory Sample.fromMap(Map<String, dynamic> m) => Sample(
@@ -69,6 +73,7 @@ class Sample {
         latitude: (m['lat'] ?? 0).toDouble(),
         longitude: (m['lon'] ?? 0).toDouble(),
         bearingDeg: (m['bearing_deg'] ?? 0).toDouble(),
-        decel: (m['decel'] ?? 0).toDouble(), // ✅ added
+        decel: (m['decel'] ?? 0).toDouble(),
+        tiltDeg: (m['tilt_deg'] ?? 0).toDouble(), // ✅ added
       );
 }

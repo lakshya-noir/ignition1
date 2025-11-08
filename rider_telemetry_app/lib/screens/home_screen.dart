@@ -1,125 +1,151 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../models/ride.dart';
 import '../services/db_service.dart';
 import '../services/sensor_service.dart';
-import 'ride_detail_screen.dart';
-import 'ride_record_screen.dart'; // ✅ correct file name
+import 'rides_list_screen.dart';
+import '../theme/app_styles.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   final DbService db;
   final SensorService sensor;
   const HomeScreen({super.key, required this.db, required this.sensor});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  List<Ride> rides = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadRides();
-  }
-
-  Future<void> _loadRides() async {
-    final data = await widget.db.listRides();
-    setState(() => rides = data);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rider Telemetry 🚴‍♂️'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: rides.isEmpty
-            ? const Center(
-                child: Text(
-                  'No rides recorded yet.\nTap + to start your first ride!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, color: Colors.white54),
+      backgroundColor: AppColors.background,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // 🔴 subtle red gradient background
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF0D0D0D), Color(0xFF1A0000)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+
+          // 🔴 soft red glow
+          Positioned(
+            top: 180,
+            left: 100,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    AppColors.accent.withOpacity(0.3),
+                    Colors.transparent,
+                  ],
                 ),
-              )
-            : ListView.separated(
-                physics: const BouncingScrollPhysics(),
-                itemCount: rides.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
-                itemBuilder: (context, i) {
-                  final r = rides[i];
-                  return GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => RideDetailScreen(
-                          db: widget.db,
-                          rideId: r.id,
+              ),
+            ),
+          ),
+
+          // 🌐 Main content
+          SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(),
+
+                // 🔥 App name
+                Text(
+                  'KINETIQ',
+                  style: TextStyle(
+                    fontFamily: 'Orbitron',
+                    fontWeight: FontWeight.w900,
+                    fontSize: 42,
+                    letterSpacing: 2,
+                    color: AppColors.accent,
+                    shadows: [
+                      Shadow(
+                        color: AppColors.accent.withOpacity(0.5),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Subtitle tagline
+                Text(
+                  'Ride Telemetry Reimagined',
+                  style: TextStyle(
+                    color: AppColors.textSecondary.withOpacity(0.8),
+                    fontSize: 16,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+
+                const Spacer(),
+
+                // ⚡ Glassy “My Rides” button
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(18),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: AppColors.accent.withOpacity(0.6),
+                            width: 1.5,
+                          ),
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.red.withOpacity(0.25),
+                              Colors.redAccent.withOpacity(0.1),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => RidesListScreen(
+                                  db: db,
+                                  sensor: sensor,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Center(
+                            child: Text(
+                              'My Rides',
+                              style: TextStyle(
+                                fontFamily: 'Orbitron',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: AppColors.accent,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade900,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: Colors.grey.shade800),
-                      ),
-                      padding: const EdgeInsets.all(14),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Ride #${r.id}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Colors.tealAccent,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Samples: ${r.sampleCount ?? 0}',
-                                  style: const TextStyle(
-                                      fontSize: 13, color: Colors.white70),
-                                ),
-                                Text(
-                                  'Date: ${r.startTime ?? 'Unknown'}',
-                                  style: const TextStyle(
-                                      fontSize: 12, color: Colors.white54),
-                                ),
-                              ]),
-                          const Icon(Icons.chevron_right,
-                              color: Colors.tealAccent)
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.tealAccent,
-        foregroundColor: Colors.black,
-        icon: const Icon(Icons.add),
-        label: const Text('New Ride'),
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => RideRecordScreen( // ✅ correct class name
-                db: widget.db,
-                sensor: widget.sensor,
-              ),
+                  ),
+                ),
+
+                const Spacer(),
+                // ⚙️ Removed “Powered by HSP” footer for cleaner look
+              ],
             ),
-          );
-          _loadRides(); // refresh after returning
-        },
+          ),
+        ],
       ),
     );
   }

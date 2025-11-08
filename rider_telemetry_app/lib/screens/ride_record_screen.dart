@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../models/sample.dart';
 import '../services/db_service.dart';
 import '../services/sensor_service.dart';
+import '../theme/app_styles.dart';
+
 
 class RideRecordScreen extends StatefulWidget {
   final DbService db;

@@ -1,52 +1,66 @@
 import 'package:flutter/material.dart';
+import 'screens/home_screen.dart';
 import 'services/db_service.dart';
 import 'services/sensor_service.dart';
-import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final db = DbService();
   await db.init();
   final sensor = SensorService(db);
-  runApp(App(db: db, sensor: sensor));
+  runApp(KinetiqApp(db: db, sensor: sensor));
 }
 
-class App extends StatelessWidget {
+class KinetiqApp extends StatelessWidget {
   final DbService db;
   final SensorService sensor;
-  const App({super.key, required this.db, required this.sensor});
+  const KinetiqApp({super.key, required this.db, required this.sensor});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Rider Telemetry',
+      title: 'Kinetiq',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        fontFamily: 'Exo2',
         brightness: Brightness.dark,
-        colorScheme: const ColorScheme.dark(
-          primary: Colors.tealAccent,
-          secondary: Colors.teal,
-        ),
-        cardColor: Colors.grey.shade900,
-        scaffoldBackgroundColor: Colors.black,
+        scaffoldBackgroundColor: const Color(0xFF0D0D0D),
+        cardColor: const Color(0xFF141414),
+        primaryColor: const Color(0xFFFF3B30),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.black,
-          elevation: 0,
+          backgroundColor: Color(0xFF0D0D0D),
+          elevation: 4,
+          shadowColor: Color(0x44FF3B30),
+          centerTitle: true,
           titleTextStyle: TextStyle(
-            fontSize: 20,
+            fontFamily: 'Orbitron',
+            color: Colors.white,
             fontWeight: FontWeight.bold,
-            color: Colors.tealAccent,
+            fontSize: 20,
           ),
         ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.grey.shade900,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade700),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFFF3B30),
+            foregroundColor: Colors.white,
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              letterSpacing: 0.5,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
-          labelStyle: const TextStyle(color: Colors.white70),
-          hintStyle: const TextStyle(color: Colors.white38),
+        ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
+          bodyMedium: TextStyle(color: Color(0xFFBBBBBB), fontSize: 14),
+          titleLarge: TextStyle(
+            fontFamily: 'Orbitron',
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
       home: HomeScreen(db: db, sensor: sensor),
